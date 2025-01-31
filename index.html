@@ -11,24 +11,24 @@
         <div id="score">Pontuação: 0</div>
         <div id="highScore">Recorde: 0</div>
     </div>
-    
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
-    
+
+    <canvas id="gameCanvas"></canvas>
+
     <div id="buttons">
-        <button id="startButton" class="action-button">Iniciar</button>
-        <button id="retryButton" class="action-button hidden">Tentar Novamente</button>
+        <button id="startButton" class="action-button" onclick="startGame()">Iniciar</button>
+        <button id="retryButton" class="action-button hidden" onclick="startGame()">Tentar Novamente</button>
         <label for="speed">Velocidade:</label>
-        <input type="range" id="speed" min="1" max="10" step="1" value="5">
+        <input type="range" id="speed" min="1" max="10" step="1" value="5" onchange="adjustSpeed()">
     </div>
-    
+
     <div id="controls">
         <div class="control-row">
-            <button class="control-button" data-direction="up">▲</button>
+            <button class="control-button" ontouchstart="changeDirection('UP')" onclick="changeDirection('UP')">▲</button>
         </div>
         <div class="control-row">
-            <button class="control-button" data-direction="left">◀</button>
-            <button class="control-button" data-direction="down">▼</button>
-            <button class="control-button" data-direction="right">▶</button>
+            <button class="control-button" ontouchstart="changeDirection('LEFT')" onclick="changeDirection('LEFT')">◀</button>
+            <button class="control-button" ontouchstart="changeDirection('DOWN')" onclick="changeDirection('DOWN')">▼</button>
+            <button class="control-button" ontouchstart="changeDirection('RIGHT')" onclick="changeDirection('RIGHT')">▶</button>
         </div>
     </div>
 
