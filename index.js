@@ -6,19 +6,16 @@ let direction = "right";
 let food = generateFood();
 let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
-let gameSpeed = 200; // Velocidade inicial (ms)
+let gameSpeed = 200;
 let gameInterval;
 
-// Atualiza a pontuação máxima na tela
 document.getElementById("highScore").innerText = `Recorde: ${highScore}`;
 
-// Inicializa os botões de controle para mobile e desktop
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("startButton").addEventListener("click", startGame);
     document.getElementById("retryButton").addEventListener("click", startGame);
     document.getElementById("speed").addEventListener("input", adjustSpeed);
 
-    // Captura eventos de clique e toque nos botões de controle
     document.querySelectorAll(".control-button").forEach(button => {
         button.addEventListener("click", handleControl);
         button.addEventListener("touchstart", handleControl, { passive: true });
@@ -38,7 +35,6 @@ function startGame() {
     food = generateFood();
     score = 0;
     document.getElementById("score").innerText = `Pontuação: ${score}`;
-
     document.getElementById("startButton").classList.add("hidden");
     document.getElementById("retryButton").classList.add("hidden");
 
@@ -48,7 +44,7 @@ function startGame() {
 
 function adjustSpeed() {
     const speedValue = document.getElementById("speed").value;
-    gameSpeed = 400 - (speedValue * 35); // Escala 1-10 (mais rápido à direita)
+    gameSpeed = 400 - (speedValue * 35);
     clearInterval(gameInterval);
     gameInterval = setInterval(updateGame, gameSpeed);
 }
@@ -69,7 +65,7 @@ function changeDirection(newDirection) {
         left: "right",
         right: "left"
     };
-    
+
     if (newDirection !== oppositeDirections[direction]) {
         direction = newDirection;
     }
@@ -136,9 +132,7 @@ function drawGame() {
     ctx.fillRect(food.x, food.y, 20, 20);
 
     ctx.fillStyle = "lime";
-    snake.forEach((segment, index) => {
+    snake.forEach(segment => {
         ctx.fillRect(segment.x, segment.y, 20, 20);
-        ctx.strokeStyle = "black";
-        ctx.strokeRect(segment.x, segment.y, 20, 20);
     });
 }
