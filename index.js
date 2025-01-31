@@ -1,19 +1,20 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const GRID_SIZE = 20;
-const GRID_COUNT = canvas.width / GRID_SIZE;
+const GRID_COUNT = Math.floor(canvas.width / GRID_SIZE);
 let snake, food, direction, gameLoop, score, highScore = 0, speed;
 
 function startGame() {
     document.getElementById('startButton').classList.add('hidden');
     document.getElementById('retryButton').classList.add('hidden');
     snake = [{ x: 10, y: 10 }];
-    food = { x: Math.floor(Math.random() * GRID_COUNT), y: Math.floor(Math.random() * GRID_COUNT) };
+    food = generateFood();
     direction = 'right';
     score = 0;
     speed = parseInt(document.getElementById('speed').value);
     document.getElementById('score').innerText = `Pontuação: ${score}`;
     clearInterval(gameLoop);
+    draw();
     gameLoop = setInterval(update, speed);
 }
 
@@ -36,7 +37,7 @@ function update() {
     if (direction === 'down') head.y++;
     if (direction === 'left') head.x--;
     if (direction === 'right') head.x++;
-    
+
     if (head.x < 0 || head.x >= GRID_COUNT || head.y < 0 || head.y >= GRID_COUNT ||
         snake.some(segment => segment.x === head.x && segment.y === head.y)) {
         clearInterval(gameLoop);
@@ -53,7 +54,7 @@ function update() {
             highScore = score;
             document.getElementById('highScore').innerText = `Recorde: ${highScore}`;
         }
-        food = { x: Math.floor(Math.random() * GRID_COUNT), y: Math.floor(Math.random() * GRID_COUNT) };
+        food = generateFood();
     } else {
         snake.pop();
     }
@@ -72,3 +73,32 @@ function draw() {
     ctx.fillStyle = '#e74c3c';
     ctx.fillRect(food.x * GRID_SIZE, food.y * GRID_SIZE, GRID_SIZE - 1, GRID_SIZE - 1);
 }
+
+function generateFood() {
+    return {
+        x: Math.floor(Math.random() * GRID_COUNT),
+        y: Math.floor(Math.random() * GRID_COUNT)
+    };
+}
+
+// Adicionando suporte a eventos de toque e teclado
+document.addEventListener('keydown', (event) => {
+    const keyMap = {
+        ArrowUp: 'up',
+        ArrowDown: 'down',
+        ArrowLeft: 'left',
+        ArrowRight: 'right'
+    };
+    if (keyMap[event.key]) {
+        changeDirection(keyMap[event.key]);
+    }
+});
+
+document.getElementById('controls').addEventListener('touchstart', function(event) {
+    if (event.target.tagName === 'BUTTON') {
+        event.preventDefault();
+        const direction = event.target.getAttribute('ontouchstart').match(/'(\w+)'/)[1];
+        changeDirection(direction);
+    }
+}, { passive: false });
+
