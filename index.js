@@ -13,6 +13,7 @@ function startGame() {
     score = 0;
     speed = parseInt(document.getElementById('speed').value);
     document.getElementById('score').innerText = `Pontuação: ${score}`;
+    clearInterval(gameLoop);
     gameLoop = setInterval(update, speed);
 }
 
@@ -53,9 +54,6 @@ function update() {
             document.getElementById('highScore').innerText = `Recorde: ${highScore}`;
         }
         food = { x: Math.floor(Math.random() * GRID_COUNT), y: Math.floor(Math.random() * GRID_COUNT) };
-        clearInterval(gameLoop);
-        speed = Math.max(50, speed - 5);
-        gameLoop = setInterval(update, speed);
     } else {
         snake.pop();
     }
@@ -74,9 +72,3 @@ function draw() {
     ctx.fillStyle = '#e74c3c';
     ctx.fillRect(food.x * GRID_SIZE, food.y * GRID_SIZE, GRID_SIZE - 1, GRID_SIZE - 1);
 }
-
-document.addEventListener('keydown', event => {
-    const keyMap = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' };
-    if (keyMap[event.key]) changeDirection(keyMap[event.key]);
-});
-
