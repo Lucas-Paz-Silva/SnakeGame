@@ -20,9 +20,10 @@ function startGame() {
 function adjustSpeed() {
     clearInterval(gameLoop);
     let speedLevel = parseInt(document.getElementById('speed').value);
-    speed = 300 - (speedLevel - 1) * 30; // Converte escala 1-10 para intervalo de 300 a 30ms
+    speed = 30 + (10 - speedLevel) * 30; // Agora 1 é o mais lento (300ms) e 10 é o mais rápido (30ms)
     gameLoop = setInterval(update, speed);
 }
+
 
 function changeDirection(newDirection) {
     const opposite = { up: 'down', down: 'up', left: 'right', right: 'left' };
