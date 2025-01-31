@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Game</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div id="gameInfo">
@@ -23,12 +23,12 @@
     
     <div id="controls">
         <div class="control-row">
-            <button class="control-button" onclick="changeDirection('up')">▲</button>
+            <button class="control-button" ontouchstart="changeDirection('up')">▲</button>
         </div>
         <div class="control-row">
-            <button class="control-button" onclick="changeDirection('left')">◀</button>
-            <button class="control-button" onclick="changeDirection('down')">▼</button>
-            <button class="control-button" onclick="changeDirection('right')">▶</button>
+            <button class="control-button" ontouchstart="changeDirection('left')">◀</button>
+            <button class="control-button" ontouchstart="changeDirection('down')">▼</button>
+            <button class="control-button" ontouchstart="changeDirection('right')">▶</button>
         </div>
     </div>
 
