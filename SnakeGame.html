@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Contêiner para a pontuação atual e o recorde -->
+    <div id="scoreContainer">
+        <div id="score">Pontuação: 0</div>
+        <div id="record">Recorde: 0</div>
+    </div>
+
+    <!-- Texto do Game Over -->
+    <div id="gameOver">Game Over!</div>
+
+    <!-- Canvas onde o jogo ocorre -->
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    
+    <!-- Controle deslizante para ajustar a velocidade -->
+    <div id="speedControl">
+        <label for="speed">Velocidade:</label>
+        <input type="range" id="speed" min="1" max="10" step="1" value="5">
+        <span id="speedValue">5</span>
+    </div>
+
+    <!-- Botões para iniciar o jogo e tentar novamente -->
+    <button id="startButton" onclick="startGame()">Iniciar Jogo</button>
+    <button id="tryAgainButton" onclick="startGame()">Tentar Novamente</button>
+
+    <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+/* Estilos gerais para o body */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #34495e; /* Cor de fundo */
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Estilo do score (pontuação atual) e do recorde (melhor pontuação) */
+#score, #record {
+    color: #ecf0f1; /* Cor do texto */
+    font-size: 24px;
+    margin: 10px;
+}
+
+/* Estilo do texto de Game Over */
+#gameOver {
+    display: none; /* Inicialmente escondido */
+    color: #e74c3c; /* Cor vermelha */
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* Sombras no texto */
+}
+
+/* Estilo do canvas onde o jogo acontece */
+#gameCanvas {
+    border: 5px solid #1abc9c; /* Borda de cor verde */
+    border-radius: 10px;
+    margin-top: 20px;
+    position: relative;
+    background-color: #2c3e50; /* Cor de fundo do canvas */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); /* Sombra para dar profundidade */
+}
+
+/* Estilo dos botões */
+button {
+    padding: 12px 24px;
+    font-size: 18px;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    border: none;
+    font-weight: bold;
+}
+
+/* Estilo do botão "Iniciar Jogo" */
+#startButton {
+    background-color: #2ecc71; /* Cor verde */
+    color: white;
+}
+
+/* Estilo do botão "Tentar Novamente" */
+#tryAgainButton {
+    background-color: #e74c3c; /* Cor vermelha */
+    color: white;
+    display: none; /* Inicialmente escondido */
+}
+
+/* Efeito de hover no botão "Iniciar Jogo" */
+#startButton:hover {
+    background-color: #27ae60;
+    transform: translateY(-2px); /* Leve movimento de elevação */
+}
+
+/* Efeito de hover no botão "Tentar Novamente" */
+#tryAgainButton:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+/* Estilo para o controle de velocidade */
+#speedControl {
+    margin-top: 15px;
+    color: #ecf0f1; /* Cor do texto */
+    font-size: 16px;
+}
+
+/* Estilo do controle deslizante de velocidade */
+#speed {
+    width: 100%;
+    max-width: 200px;
+    margin-top: 10px;
+}
+
+/* Valor de velocidade atual */
+#speedValue {
+    color: #ecf0f1;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+/* Estilo do contador de tempo e Game Over */
+#countdown, #gameOver {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Centraliza o texto */
+    color: #ecf0f1;
+    font-size: 48px;
+    font-weight: bold;
+}
+
+/* Estilo para o contêiner de pontuação */
+#scoreContainer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 400px;
+    margin-top: 20px;
+    padding: 0 20px;
+}
+
+/* Customizações visuais da cobra e comida */
+.snake {
+    background: linear-gradient(135deg, #2ecc71, #27ae60); /* Gradiente verde */
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); /* Brilho na cobra */
+}
+
+.food {
+    background-color: #e74c3c; /* Cor vermelha */
+    border-radius: 50%; /* Forma circular */
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); /* Brilho na comida */
+}
