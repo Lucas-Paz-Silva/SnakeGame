@@ -1,121 +1,105 @@
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("startButton").addEventListener("click", startGame);
+    document.getElementById("retryButton").addEventListener("click", startGame);
+    document.getElementById("speed").addEventListener("input", adjustSpeed);
+
+    // Eventos de toque para os controles móveis
+    document.querySelectorAll(".control-button").forEach(button => {
+        button.addEventListener("touchstart", (event) => {
+            const direction = event.target.getAttribute("data-direction");
+            changeDirection(direction);
+        });
+    });
+});
+
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 let snake = [{ x: 200, y: 200 }];
 let direction = "right";
-let food = { x: 100, y: 100 };
-let score = 0;
-let highScore = localStorage.getItem("highScore") || 0;
+let food = generateFood();
 let gameInterval;
-let speed = 200 - (document.getElementById("speed").value * 20);
-
-document.getElementById("highScore").innerText = `Recorde: ${highScore}`;
+let speed = 200; // Velocidade inicial
 
 function startGame() {
     snake = [{ x: 200, y: 200 }];
     direction = "right";
-    score = 0;
-    document.getElementById("score").innerText = "Pontuação: 0";
-    document.getElementById("startButton").classList.add("hidden");
+    food = generateFood();
     document.getElementById("retryButton").classList.add("hidden");
-    
-    placeFood();
-    clearInterval(gameInterval);
+    document.getElementById("startButton").classList.add("hidden");
+
+    if (gameInterval) clearInterval(gameInterval);
     gameInterval = setInterval(updateGame, speed);
 }
 
 function updateGame() {
-    let head = { ...snake[0] };
-
-    switch (direction) {
-        case "up":
-            head.y -= 20;
-            break;
-        case "down":
-            head.y += 20;
-            break;
-        case "left":
-            head.x -= 20;
-            break;
-        case "right":
-            head.x += 20;
-            break;
-    }
-
-    if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height || isColliding(head)) {
-        gameOver();
+    moveSnake();
+    if (checkCollision()) {
+        clearInterval(gameInterval);
+        document.getElementById("retryButton").classList.remove("hidden");
         return;
     }
-
-    snake.unshift(head);
-
-    if (head.x === food.x && head.y === food.y) {
-        score += 10;
-        document.getElementById("score").innerText = `Pontuação: ${score}`;
-        if (score > highScore) {
-            highScore = score;
-            localStorage.setItem("highScore", highScore);
-            document.getElementById("highScore").innerText = `Recorde: ${highScore}`;
-        }
-        placeFood();
-    } else {
-        snake.pop();
-    }
-
     drawGame();
 }
 
+function moveSnake() {
+    let head = { ...snake[0] };
+
+    switch (direction) {
+        case "up": head.y -= 20; break;
+        case "down": head.y += 20; break;
+        case "left": head.x -= 20; break;
+        case "right": head.x += 20; break;
+    }
+
+    snake.unshift(head);
+    if (head.x === food.x && head.y === food.y) {
+        food = generateFood();
+    } else {
+        snake.pop();
+    }
+}
+
 function drawGame() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = "red";
     ctx.fillRect(food.x, food.y, 20, 20);
 
     ctx.fillStyle = "green";
-    snake.forEach((segment) => ctx.fillRect(segment.x, segment.y, 20, 20));
+    snake.forEach(segment => ctx.fillRect(segment.x, segment.y, 20, 20));
 }
 
-function placeFood() {
-    food = {
-        x: Math.floor(Math.random() * (canvas.width / 20)) * 20,
-        y: Math.floor(Math.random() * (canvas.height / 20)) * 20,
+function generateFood() {
+    return {
+        x: Math.floor(Math.random() * 20) * 20,
+        y: Math.floor(Math.random() * 20) * 20
     };
 }
 
-function isColliding(head) {
-    return snake.some(segment => segment.x === head.x && segment.y === head.y);
-}
-
-function gameOver() {
-    clearInterval(gameInterval);
-    document.getElementById("retryButton").classList.remove("hidden");
+function checkCollision() {
+    let head = snake[0];
+    if (head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height) {
+        return true;
+    }
+    return snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y);
 }
 
 function changeDirection(newDirection) {
-    if (
-        (newDirection === "up" && direction !== "down") ||
+    if ((newDirection === "up" && direction !== "down") ||
         (newDirection === "down" && direction !== "up") ||
         (newDirection === "left" && direction !== "right") ||
-        (newDirection === "right" && direction !== "left")
-    ) {
+        (newDirection === "right" && direction !== "left")) {
         direction = newDirection;
     }
 }
 
 function adjustSpeed() {
-    speed = 200 - (document.getElementById("speed").value * 20);
-    clearInterval(gameInterval);
-    gameInterval = setInterval(updateGame, speed);
-}
-
-document.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowUp") changeDirection("up");
-    if (event.key === "ArrowDown") changeDirection("down");
-    if (event.key === "ArrowLeft") changeDirection("left");
-    if (event.key === "ArrowRight") changeDirection("right");
-});
-
-function handleTouchStart(event, direction) {
-    event.preventDefault();
-    changeDirection(direction);
+    let speedValue = document.getElementById("speed").value;
+    speed = 300 - (speedValue * 30); // Ajustando escala de 1 a 10
+    if (gameInterval) {
+        clearInterval(gameInterval);
+        gameInterval = setInterval(updateGame, speed);
+    }
 }
