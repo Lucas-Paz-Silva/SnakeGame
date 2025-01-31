@@ -1,48 +1,81 @@
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("startButton").addEventListener("click", startGame);
-    document.getElementById("retryButton").addEventListener("click", startGame);
-    document.getElementById("speed").addEventListener("input", adjustSpeed);
-
-    // Eventos de toque para os controles móveis
-    document.querySelectorAll(".control-button").forEach(button => {
-        button.addEventListener("touchstart", (event) => {
-            const direction = event.target.getAttribute("data-direction");
-            changeDirection(direction);
-        });
-    });
-});
-
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 let snake = [{ x: 200, y: 200 }];
 let direction = "right";
 let food = generateFood();
+let score = 0;
+let highScore = localStorage.getItem("highScore") || 0;
+let gameSpeed = 200; // Velocidade inicial (ms)
 let gameInterval;
-let speed = 200; // Velocidade inicial
+
+// Atualiza a pontuação máxima na tela
+document.getElementById("highScore").innerText = `Recorde: ${highScore}`;
+
+// Inicializa os botões de controle para mobile e desktop
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("startButton").addEventListener("click", startGame);
+    document.getElementById("retryButton").addEventListener("click", startGame);
+    document.getElementById("speed").addEventListener("input", adjustSpeed);
+
+    // Captura eventos de clique e toque nos botões de controle
+    document.querySelectorAll(".control-button").forEach(button => {
+        button.addEventListener("click", handleControl);
+        button.addEventListener("touchstart", handleControl, { passive: true });
+    });
+
+    document.addEventListener("keydown", handleKeyPress);
+});
+
+function handleControl(event) {
+    const direction = event.target.getAttribute("data-direction");
+    changeDirection(direction);
+}
 
 function startGame() {
     snake = [{ x: 200, y: 200 }];
     direction = "right";
     food = generateFood();
-    document.getElementById("retryButton").classList.add("hidden");
-    document.getElementById("startButton").classList.add("hidden");
+    score = 0;
+    document.getElementById("score").innerText = `Pontuação: ${score}`;
 
-    if (gameInterval) clearInterval(gameInterval);
-    gameInterval = setInterval(updateGame, speed);
+    document.getElementById("startButton").classList.add("hidden");
+    document.getElementById("retryButton").classList.add("hidden");
+
+    clearInterval(gameInterval);
+    gameInterval = setInterval(updateGame, gameSpeed);
+}
+
+function adjustSpeed() {
+    const speedValue = document.getElementById("speed").value;
+    gameSpeed = 400 - (speedValue * 35); // Escala 1-10 (mais rápido à direita)
+    clearInterval(gameInterval);
+    gameInterval = setInterval(updateGame, gameSpeed);
+}
+
+function handleKeyPress(event) {
+    switch (event.key) {
+        case "ArrowUp": changeDirection("up"); break;
+        case "ArrowDown": changeDirection("down"); break;
+        case "ArrowLeft": changeDirection("left"); break;
+        case "ArrowRight": changeDirection("right"); break;
+    }
+}
+
+function changeDirection(newDirection) {
+    const oppositeDirections = {
+        up: "down",
+        down: "up",
+        left: "right",
+        right: "left"
+    };
+    
+    if (newDirection !== oppositeDirections[direction]) {
+        direction = newDirection;
+    }
 }
 
 function updateGame() {
-    moveSnake();
-    if (checkCollision()) {
-        clearInterval(gameInterval);
-        document.getElementById("retryButton").classList.remove("hidden");
-        return;
-    }
-    drawGame();
-}
-
-function moveSnake() {
     let head = { ...snake[0] };
 
     switch (direction) {
@@ -52,12 +85,47 @@ function moveSnake() {
         case "right": head.x += 20; break;
     }
 
+    if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height || checkCollision(head)) {
+        gameOver();
+        return;
+    }
+
     snake.unshift(head);
+
     if (head.x === food.x && head.y === food.y) {
+        score += 10;
+        document.getElementById("score").innerText = `Pontuação: ${score}`;
         food = generateFood();
+
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("highScore", highScore);
+            document.getElementById("highScore").innerText = `Recorde: ${highScore}`;
+        }
     } else {
         snake.pop();
     }
+
+    drawGame();
+}
+
+function gameOver() {
+    clearInterval(gameInterval);
+    document.getElementById("retryButton").classList.remove("hidden");
+}
+
+function generateFood() {
+    let foodX, foodY;
+    do {
+        foodX = Math.floor(Math.random() * (canvas.width / 20)) * 20;
+        foodY = Math.floor(Math.random() * (canvas.height / 20)) * 20;
+    } while (snake.some(segment => segment.x === foodX && segment.y === foodY));
+
+    return { x: foodX, y: foodY };
+}
+
+function checkCollision(head) {
+    return snake.some(segment => segment.x === head.x && segment.y === head.y);
 }
 
 function drawGame() {
@@ -67,39 +135,10 @@ function drawGame() {
     ctx.fillStyle = "red";
     ctx.fillRect(food.x, food.y, 20, 20);
 
-    ctx.fillStyle = "green";
-    snake.forEach(segment => ctx.fillRect(segment.x, segment.y, 20, 20));
-}
-
-function generateFood() {
-    return {
-        x: Math.floor(Math.random() * 20) * 20,
-        y: Math.floor(Math.random() * 20) * 20
-    };
-}
-
-function checkCollision() {
-    let head = snake[0];
-    if (head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height) {
-        return true;
-    }
-    return snake.slice(1).some(segment => segment.x === head.x && segment.y === head.y);
-}
-
-function changeDirection(newDirection) {
-    if ((newDirection === "up" && direction !== "down") ||
-        (newDirection === "down" && direction !== "up") ||
-        (newDirection === "left" && direction !== "right") ||
-        (newDirection === "right" && direction !== "left")) {
-        direction = newDirection;
-    }
-}
-
-function adjustSpeed() {
-    let speedValue = document.getElementById("speed").value;
-    speed = 300 - (speedValue * 30); // Ajustando escala de 1 a 10
-    if (gameInterval) {
-        clearInterval(gameInterval);
-        gameInterval = setInterval(updateGame, speed);
-    }
+    ctx.fillStyle = "lime";
+    snake.forEach((segment, index) => {
+        ctx.fillRect(segment.x, segment.y, 20, 20);
+        ctx.strokeStyle = "black";
+        ctx.strokeRect(segment.x, segment.y, 20, 20);
+    });
 }
