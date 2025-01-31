@@ -8,6 +8,7 @@ let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
 let gameSpeed = 200;
 let gameInterval;
+let gameRunning = false;
 
 document.getElementById("highScore").innerText = `Recorde: ${highScore}`;
 
@@ -30,6 +31,9 @@ function handleControl(event) {
 }
 
 function startGame() {
+    if (gameRunning) return;
+
+    gameRunning = true;
     snake = [{ x: 200, y: 200 }];
     direction = "right";
     food = generateFood();
@@ -45,8 +49,10 @@ function startGame() {
 function adjustSpeed() {
     const speedValue = document.getElementById("speed").value;
     gameSpeed = 400 - (speedValue * 35);
-    clearInterval(gameInterval);
-    gameInterval = setInterval(updateGame, gameSpeed);
+    if (gameRunning) {
+        clearInterval(gameInterval);
+        gameInterval = setInterval(updateGame, gameSpeed);
+    }
 }
 
 function handleKeyPress(event) {
@@ -107,6 +113,7 @@ function updateGame() {
 
 function gameOver() {
     clearInterval(gameInterval);
+    gameRunning = false;
     document.getElementById("retryButton").classList.remove("hidden");
 }
 
