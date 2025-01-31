@@ -23,15 +23,15 @@
     
     <div id="controls">
         <div class="control-row">
-            <button class="control-button" onclick="changeDirection('up')">▲</button>
+            <button class="control-button" ontouchstart="handleTouchStart(event, 'up')">▲</button>
         </div>
         <div class="control-row">
-            <button class="control-button" onclick="changeDirection('left')">◀</button>
-            <button class="control-button" onclick="changeDirection('down')">▼</button>
-            <button class="control-button" onclick="changeDirection('right')">▶</button>
+            <button class="control-button" ontouchstart="handleTouchStart(event, 'left')">◀</button>
+            <button class="control-button" ontouchstart="handleTouchStart(event, 'down')">▼</button>
+            <button class="control-button" ontouchstart="handleTouchStart(event, 'right')">▶</button>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>
