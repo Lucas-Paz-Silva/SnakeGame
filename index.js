@@ -1,145 +1,100 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
-let snake = [{ x: 200, y: 200 }];
-let direction = "right";
-let food = generateFood();
+canvas.width = 400;
+canvas.height = 400;
+
+const box = 20;
+let snake = [{ x: 10 * box, y: 10 * box }];
+let direction = "RIGHT";
+let food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
 let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
-let gameSpeed = 200;
 let gameInterval;
-let gameRunning = false;
+let speed = 200;
 
-document.getElementById("highScore").innerText = `Recorde: ${highScore}`;
+document.getElementById("highScore").innerText = "Recorde: " + highScore;
 
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("startButton").addEventListener("click", startGame);
-    document.getElementById("retryButton").addEventListener("click", startGame);
-    document.getElementById("speed").addEventListener("input", adjustSpeed);
-
-    document.querySelectorAll(".control-button").forEach(button => {
-        button.addEventListener("click", handleControl);
-        button.addEventListener("touchstart", handleControl, { passive: true });
-    });
-
-    document.addEventListener("keydown", handleKeyPress);
-});
-
-function handleControl(event) {
-    const direction = event.target.getAttribute("data-direction");
-    changeDirection(direction);
-}
-
-function startGame() {
-    if (gameRunning) return;
-
-    gameRunning = true;
-    snake = [{ x: 200, y: 200 }];
-    direction = "right";
-    food = generateFood();
-    score = 0;
-    document.getElementById("score").innerText = `Pontuação: ${score}`;
-    document.getElementById("startButton").classList.add("hidden");
-    document.getElementById("retryButton").classList.add("hidden");
-
-    clearInterval(gameInterval);
-    gameInterval = setInterval(updateGame, gameSpeed);
-}
-
-function adjustSpeed() {
-    const speedValue = document.getElementById("speed").value;
-    gameSpeed = 400 - (speedValue * 35);
-    if (gameRunning) {
-        clearInterval(gameInterval);
-        gameInterval = setInterval(updateGame, gameSpeed);
-    }
-}
-
-function handleKeyPress(event) {
-    switch (event.key) {
-        case "ArrowUp": changeDirection("up"); break;
-        case "ArrowDown": changeDirection("down"); break;
-        case "ArrowLeft": changeDirection("left"); break;
-        case "ArrowRight": changeDirection("right"); break;
-    }
-}
-
-function changeDirection(newDirection) {
-    const oppositeDirections = {
-        up: "down",
-        down: "up",
-        left: "right",
-        right: "left"
-    };
-
-    if (newDirection !== oppositeDirections[direction]) {
-        direction = newDirection;
-    }
-}
-
-function updateGame() {
-    let head = { ...snake[0] };
-
-    switch (direction) {
-        case "up": head.y -= 20; break;
-        case "down": head.y += 20; break;
-        case "left": head.x -= 20; break;
-        case "right": head.x += 20; break;
-    }
-
-    if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height || checkCollision(head)) {
-        gameOver();
-        return;
-    }
-
-    snake.unshift(head);
-
-    if (head.x === food.x && head.y === food.y) {
-        score += 10;
-        document.getElementById("score").innerText = `Pontuação: ${score}`;
-        food = generateFood();
-
-        if (score > highScore) {
-            highScore = score;
-            localStorage.setItem("highScore", highScore);
-            document.getElementById("highScore").innerText = `Recorde: ${highScore}`;
-        }
-    } else {
-        snake.pop();
-    }
-
-    drawGame();
-}
-
-function gameOver() {
-    clearInterval(gameInterval);
-    gameRunning = false;
-    document.getElementById("retryButton").classList.remove("hidden");
-}
-
-function generateFood() {
-    let foodX, foodY;
-    do {
-        foodX = Math.floor(Math.random() * (canvas.width / 20)) * 20;
-        foodY = Math.floor(Math.random() * (canvas.height / 20)) * 20;
-    } while (snake.some(segment => segment.x === foodX && segment.y === foodY));
-
-    return { x: foodX, y: foodY };
-}
-
-function checkCollision(head) {
-    return snake.some(segment => segment.x === head.x && segment.y === head.y);
-}
-
-function drawGame() {
+function draw() {
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = "red";
-    ctx.fillRect(food.x, food.y, 20, 20);
+    ctx.fillRect(food.x, food.y, box, box);
 
-    ctx.fillStyle = "lime";
-    snake.forEach(segment => {
-        ctx.fillRect(segment.x, segment.y, 20, 20);
-    });
+    for (let i = 0; i < snake.length; i++) {
+        ctx.fillStyle = i === 0 ? "green" : "lime";
+        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+    }
+
+    let newX = snake[0].x;
+    let newY = snake[0].y;
+
+    if (direction === "LEFT") newX -= box;
+    if (direction === "RIGHT") newX += box;
+    if (direction === "UP") newY -= box;
+    if (direction === "DOWN") newY += box;
+
+    if (newX === food.x && newY === food.y) {
+        score++;
+        document.getElementById("score").innerText = "Pontuação: " + score;
+        food = { x: Math.floor(Math.random() * 20) * box, y: Math.floor(Math.random() * 20) * box };
+    } else {
+        snake.pop();
+    }
+
+    let newHead = { x: newX, y: newY };
+
+    if (collision(newHead, snake) || newX < 0 || newY < 0 || newX >= canvas.width || newY >= canvas.height) {
+        clearInterval(gameInterval);
+        document.getElementById("retryButton").classList.remove("hidden");
+        if (score > highScore) {
+            highScore = score;
+            localStorage.setItem("highScore", highScore);
+            document.getElementById("highScore").innerText = "Recorde: " + highScore;
+        }
+        return;
+    }
+
+    snake.unshift(newHead);
 }
+
+function collision(head, body) {
+    for (let i = 0; i < body.length; i++) {
+        if (head.x === body[i].x && head.y === body[i].y) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function startGame() {
+    snake = [{ x: 10 * box, y: 10 * box }];
+    direction = "RIGHT";
+    score = 0;
+    document.getElementById("score").innerText = "Pontuação: 0";
+    document.getElementById("retryButton").classList.add("hidden");
+    clearInterval(gameInterval);
+    gameInterval = setInterval(draw, speed);
+}
+
+function adjustSpeed() {
+    let speedValue = document.getElementById("speed").value;
+    speed = 300 - (speedValue * 25);
+    clearInterval(gameInterval);
+    gameInterval = setInterval(draw, speed);
+}
+
+function changeDirection(newDirection) {
+    if (newDirection === "LEFT" && direction !== "RIGHT") direction = "LEFT";
+    if (newDirection === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
+    if (newDirection === "UP" && direction !== "DOWN") direction = "UP";
+    if (newDirection === "DOWN" && direction !== "UP") direction = "DOWN";
+}
+
+document.addEventListener("keydown", event => {
+    if (event.key === "ArrowLeft") changeDirection("LEFT");
+    if (event.key === "ArrowRight") changeDirection("RIGHT");
+    if (event.key === "ArrowUp") changeDirection("UP");
+    if (event.key === "ArrowDown") changeDirection("DOWN");
+});
