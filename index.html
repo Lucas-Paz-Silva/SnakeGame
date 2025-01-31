@@ -1,35 +1,26 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Game</title>
-    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Contêiner para a pontuação atual e o recorde -->
-    <div id="scoreContainer">
+    <div id="gameInfo">
         <div id="score">Pontuação: 0</div>
-        <div id="record">Recorde: 0</div>
+        <div id="highScore">Recorde: 0</div>
     </div>
-
-    <!-- Texto do Game Over -->
-    <div id="gameOver">Game Over!</div>
-
-    <!-- Canvas onde o jogo ocorre -->
+    
     <canvas id="gameCanvas" width="400" height="400"></canvas>
     
-    <!-- Controle deslizante para ajustar a velocidade -->
-    <div id="speedControl">
+    <div id="buttons">
+        <button id="startButton" class="action-button" onclick="startGame()">Iniciar</button>
+        <button id="retryButton" class="action-button hidden" onclick="startGame()">Tentar Novamente</button>
         <label for="speed">Velocidade:</label>
-        <input type="range" id="speed" min="1" max="10" step="1" value="5">
-        <span id="speedValue">5</span>
+        <input type="range" id="speed" min="50" max="300" step="10" value="200" onchange="adjustSpeed()">
     </div>
-
-    <!-- Botões para iniciar o jogo e tentar novamente -->
-    <button id="startButton" onclick="startGame()">Iniciar Jogo</button>
-    <button id="tryAgainButton" onclick="startGame()">Tentar Novamente</button>
-
-    <script src="index.js"></script>
-</body>
-</html>
+    
+    <div id="controls">
+        <div class="control-row">
+            <button class="control-button" onclick="changeDirection('up')">▲</button>
+        </div>
+        <div class="control-row">
+            <button class="control-button" onclick="changeDirection('left')">◀</button>
+            <button class="control-button" onclick="changeDirection('down')">▼</button>
+            <button class="control-button" onclick="changeDirection('right')">▶</button>
+        </div>
+    </div>
