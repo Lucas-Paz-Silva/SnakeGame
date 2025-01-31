@@ -15,20 +15,20 @@
     <canvas id="gameCanvas" width="400" height="400"></canvas>
     
     <div id="buttons">
-        <button id="startButton" class="action-button" onclick="startGame()">Iniciar</button>
-        <button id="retryButton" class="action-button hidden" onclick="startGame()">Tentar Novamente</button>
+        <button id="startButton" class="action-button">Iniciar</button>
+        <button id="retryButton" class="action-button hidden">Tentar Novamente</button>
         <label for="speed">Velocidade:</label>
-        <input type="range" id="speed" min="1" max="10" step="1" value="5" onchange="adjustSpeed()">
+        <input type="range" id="speed" min="1" max="10" step="1" value="5">
     </div>
     
     <div id="controls">
         <div class="control-row">
-            <button class="control-button" ontouchstart="handleTouchStart(event, 'up')">▲</button>
+            <button class="control-button" data-direction="up">▲</button>
         </div>
         <div class="control-row">
-            <button class="control-button" ontouchstart="handleTouchStart(event, 'left')">◀</button>
-            <button class="control-button" ontouchstart="handleTouchStart(event, 'down')">▼</button>
-            <button class="control-button" ontouchstart="handleTouchStart(event, 'right')">▶</button>
+            <button class="control-button" data-direction="left">◀</button>
+            <button class="control-button" data-direction="down">▼</button>
+            <button class="control-button" data-direction="right">▶</button>
         </div>
     </div>
 
